@@ -1,0 +1,40 @@
+{
+    "devDependencies": {
+        "@eslint/js": "^9.37.0",
+        "eslint": "^9.37.0",
+        "globals": "^16.4.0",
+        "htmlhint": "^1.7.1",
+        "madge": "^8.0.0",
+        "stylelint": "^16.25.0",
+        "stylelint-config-recommended": "^17.0.0"
+    },
+    "scripts": {
+        "start": "node backend/server.js",
+        "server": "node backend/server.js",
+        "server:dev": "node --watch backend/server.js",
+        "lint": "eslint js",
+        "lint:js": "eslint js",
+        "lint:css": "stylelint css",
+        "lint:html": "htmlhint **/*.html",
+        "dev": "npm run build && node backend/server.js",
+        "build:js": "npx esbuild js/*.js --bundle --minify --outdir=dist",
+        "build": "npm run build:js && node -e \"const fs = require('fs-extra'); fs.ensureDir('public').then(() => Promise.all(['assets', 'css', 'dist', 'index.html', 'dashboard.html', 'guests.html', 'checkin.html'].map((f) => fs.copy(f, 'public/' + f)))).then(() => console.log('✅ Successfully!'));\"",
+        "build:production": "npm run build",
+        "start:production": "node backend/server.js"
+    },
+    "dependencies": {
+        "bcryptjs": "^2.4.3",
+        "cors": "^2.8.5",
+        "dotenv": "^18.0.4",
+        "esbuild": "^0.25.10",
+        "express": "^4.21.2",
+        "express-rate-limit": "^8.7.0",
+        "fs-extra": "^11.3.2",
+        "helmet": "^8.3.0",
+        "html5-qrcode": "^2.3.8",
+        "jsonwebtoken": "^9.0.2",
+        "pg": "^8.23.0",
+        "qrcode": "^1.5.4",
+        "uuid": "^11.1.0"
+    }
+}

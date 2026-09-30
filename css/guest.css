@@ -1,0 +1,137 @@
+@import url("common.css");
+@import url("animation.css");
+
+html {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+.with-scrollbar {
+    scrollbar-width: auto !important;
+    -ms-overflow-style: auto !important;
+}
+
+.font-esthetic {
+    font-family: 'Sacramento', cursive !important;
+}
+
+.font-arabic {
+    font-family: 'Noto Naskh Arabic', serif !important;
+}
+
+.img-center-crop {
+    width: 13rem;
+    height: 13rem;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+    box-shadow: 0 10px 25px -5px rgba(29, 78, 216, 0.2) !important;
+}
+
+html[data-bs-theme="dark"] .btn-transparent {
+    background-color: rgba(10, 19, 36, 0.65) !important;
+    backdrop-filter: blur(0.5rem);
+    border-color: rgba(96, 165, 250, 0.3) !important;
+    color: #93c5fd !important;
+}
+
+html[data-bs-theme="light"] .btn-transparent {
+    background-color: rgba(255, 255, 255, 0.75) !important;
+    backdrop-filter: blur(0.5rem);
+    border-color: rgba(29, 78, 216, 0.25) !important;
+    color: #1d4ed8 !important;
+}
+
+.loading-page {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1056;
+}
+
+/* Background Sections & SVG Waves for Blue Theme */
+html[data-bs-theme="light"] .color-theme-svg {
+    color: #ffffff;
+    background-color: #f0f7ff;
+}
+
+html[data-bs-theme="dark"] .color-theme-svg {
+    color: #0f1d38;
+    background-color: #0a1324;
+}
+
+html[data-bs-theme="light"] .bg-light-dark {
+    background-color: #f0f7ff !important;
+}
+
+html[data-bs-theme="dark"] .bg-light-dark {
+    background-color: #0a1324 !important;
+}
+
+html[data-bs-theme="light"] .bg-white-black {
+    background-color: #ffffff !important;
+}
+
+html[data-bs-theme="dark"] .bg-white-black {
+    background-color: #0f1d38 !important;
+}
+
+.bg-cover-home {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    mask-image: linear-gradient(0.5turn, transparent, black 40%, black 60%, transparent);
+}
+
+.width-loading {
+    width: 25%;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+@media screen and (max-width: 992px) {
+    .width-loading {
+        width: 50%;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    .width-loading {
+        width: 75%;
+    }
+}
+
+svg {
+    display: block;
+    line-height: 0;
+    shape-rendering: geometricPrecision;
+    backface-visibility: hidden;
+}
+
+.svg-wrapper {
+    overflow: hidden !important;
+    transform: translateZ(0) !important;
+}
+
+.no-gap-bottom {
+    margin-bottom: -0.75rem !important;
+}
+
+/* Welcome Page Open Invitation Button */
+#welcome .btn-light {
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+    color: #ffffff !important;
+    border: none !important;
+    font-weight: 600;
+    box-shadow: 0 8px 24px -4px rgba(29, 78, 216, 0.45) !important;
+    transition: all 0.25s ease;
+}
+
+#welcome .btn-light:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px -4px rgba(29, 78, 216, 0.55) !important;
+}

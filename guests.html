@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="id" data-bs-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#1d4ed8">
+    <title>Kelola Tamu | Undangan</title>
+    <link rel="icon" type="image/svg+xml" href="./assets/images/favicon-rg.svg">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" integrity="sha256-2FMn2Zx6PuH5tdBQDRNwrOo60ts5wWPC9R8jK67b3t4=" crossorigin="anonymous">
+    <link rel="stylesheet" href="./css/checkin.css">
+    <script src="./dist/guests.js" defer></script>
+</head>
+<body data-url="">
+    <main class="tool-shell">
+        <header class="tool-header">
+            <a class="brand-mark" href="./dashboard.html" aria-label="Kembali ke dashboard">R&amp;G</a>
+            <div class="header-copy">
+                <p class="eyebrow">PENGELOLAAN ACARA</p>
+                <h1>Daftar tamu</h1>
+            </div>
+            <a class="btn btn-outline-dark btn-sm ms-auto" href="./dashboard.html">Dashboard</a>
+        </header>
+
+        <section id="admin-login" class="login-wrap" hidden>
+            <form id="login-form" class="tool-panel login-panel">
+                <p class="eyebrow">ADMIN</p>
+                <h2>Masuk untuk mengelola QR</h2>
+                <label class="form-label" for="admin-email">Email</label>
+                <input class="form-control mb-3" id="admin-email" type="email" autocomplete="username" required>
+                <label class="form-label" for="admin-password">Password</label>
+                <input class="form-control mb-3" id="admin-password" type="password" autocomplete="current-password" required>
+                <button class="btn btn-dark w-100" type="submit">Masuk</button>
+                <p id="login-error" class="form-message error-message" role="alert"></p>
+            </form>
+        </section>
+
+        <section id="guest-manager" hidden>
+            <div class="summary-row" aria-live="polite">
+                <span id="guest-count">Memuat tamu...</span>
+                <button id="admin-logout" class="btn btn-outline-secondary btn-sm" type="button">Keluar</button>
+            </div>
+            <div class="manager-grid">
+                <section class="tool-panel guest-form-panel">
+                    <p class="eyebrow">UNDANGAN BARU</p>
+                    <h2>Tambah satu tamu</h2>
+                    <form id="guest-form">
+                        <label class="form-label" for="guest-name">Nama tamu</label>
+                        <input class="form-control mb-3" id="guest-name" name="name" maxlength="100" required>
+                        <label class="form-label" for="group-name">Keluarga / kelompok <span class="optional-label">Opsional</span></label>
+                        <input class="form-control mb-3" id="group-name" name="group_name" maxlength="100">
+                        <label class="form-label" for="guest-pax">Jumlah orang <span class="optional-label">Opsional, default 1</span></label>
+                        <input class="form-control mb-3" id="guest-pax" name="pax" type="number" min="1" max="50" placeholder="1">
+                        <button id="create-guest" class="btn btn-dark" type="submit">Buat undangan QR</button>
+                    </form>
+                    <p id="guest-message" class="form-message" role="status"></p>
+                </section>
+
+                <section class="tool-panel bulk-panel">
+                    <p class="eyebrow">IMPOR MASSAL</p>
+                    <h2>Tempel daftar tamu</h2>
+                    <p class="muted-line">Satu tamu per baris: <code>Nama</code>, atau <code>Nama, Kelompok</code>, atau <code>Nama, Kelompok, Jumlah orang</code>. Bisa juga tempel langsung dari Excel/WhatsApp.</p>
+                    <textarea id="bulk-text" class="form-control mb-2" rows="6" placeholder="Budi Santoso, Kantor, 2&#10;Sari, Keluarga Sari&#10;Dewi"></textarea>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <button id="bulk-preview" class="btn btn-outline-dark btn-sm" type="button">Pratinjau</button>
+                        <button id="bulk-import" class="btn btn-dark btn-sm" type="button" hidden>Impor tamu valid</button>
+                    </div>
+                    <p id="bulk-message" class="form-message" role="status"></p>
+
+                    <div id="bulk-preview-wrap" class="table-responsive mt-2" hidden>
+                        <table class="table table-sm align-middle mb-0">
+                            <thead><tr><th>Baris</th><th>Nama</th><th>Kelompok</th><th>Pax</th><th>Catatan</th></tr></thead>
+                            <tbody id="bulk-preview-body"></tbody>
+                        </table>
+                    </div>
+
+                    <div id="bulk-results" class="bulk-results" hidden>
+                        <p class="form-message" id="bulk-results-message"></p>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button id="bulk-download-zip" class="btn btn-outline-dark btn-sm" type="button">Unduh ZIP QR (PNG)</button>
+                            <button id="bulk-download-csv" class="btn btn-outline-dark btn-sm" type="button">Unduh CSV link</button>
+                            <button id="bulk-print" class="btn btn-outline-dark btn-sm" type="button">Cetak lembar QR</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="qr-print" class="tool-panel qr-panel" hidden>
+                    <div class="qr-heading">
+                        <div>
+                            <p class="eyebrow">QR UNDANGAN</p>
+                            <h2 id="qr-guest-name"></h2>
+                            <p id="qr-group-name" class="muted-line"></p>
+                        </div>
+                        <button id="close-qr" class="icon-button" type="button" aria-label="Tutup QR">&times;</button>
+                    </div>
+                    <canvas id="qr-canvas" aria-label="Kode QR undangan"></canvas>
+                    <p class="qr-note">Satu QR berlaku untuk satu tamu dan hanya dapat check-in sekali.</p>
+                    <button id="download-qr" class="btn btn-outline-dark btn-sm" type="button">Unduh QR</button>
+                    <button id="print-qr" class="btn btn-dark btn-sm" type="button">Cetak</button>
+                </section>
+            </div>
+
+            <section class="tool-panel list-panel">
+                <div class="list-heading">
+                    <div>
+                        <p class="eyebrow">ROSTER</p>
+                        <h2>Tamu undangan</h2>
+                    </div>
+                    <button id="refresh-guests" class="btn btn-outline-dark btn-sm" type="button">Muat ulang</button>
+                </div>
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead><tr><th>Nama</th><th>Kelompok</th><th>Pax</th><th>Status</th><th class="text-end">Aksi</th></tr></thead>
+                        <tbody id="guest-list"></tbody>
+                    </table>
+                </div>
+                <p id="empty-state" class="empty-state" hidden>Belum ada tamu. Tambahkan nama untuk menerbitkan QR.</p>
+            </section>
+        </section>
+        <div id="bulk-print-sheet" hidden></div>
+    </main>
+</body>
+</html>

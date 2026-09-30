@@ -1,0 +1,26 @@
+CODE_OF_CONDUCT.md
+SECURITY.md
+node_modules/
+dist/
+public/
+.env
+backend/.env
+backend/.env.*
+!backend/.env.example
+backend/undangan.db
+backend/undangan.db-shm
+backend/undangan.db-wal
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS and IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.agents/

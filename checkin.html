@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="id" data-bs-theme="light">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#1d4ed8">
+    <title>Check-in Tamu | Undangan</title>
+    <link rel="icon" type="image/svg+xml" href="./assets/images/favicon-rg.svg">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" integrity="sha256-2FMn2Zx6PuH5tdBQDRNwrOo60ts5wWPC9R8jK67b3t4=" crossorigin="anonymous">
+    <link rel="stylesheet" href="./css/checkin.css">
+    <script src="./dist/checkin.js" defer></script>
+</head>
+<body class="scanner-page" data-url="">
+    <main class="scanner-shell">
+        <header class="scanner-header">
+            <a class="brand-mark" href="./dashboard.html" aria-label="Kembali">R&amp;G</a>
+            <div>
+                <p class="eyebrow">PINTU MASUK</p>
+                <h1>Check-in tamu</h1>
+            </div>
+            <a class="scanner-back" href="./guests.html">Kelola tamu</a>
+        </header>
+
+        <section id="staff-login" class="scanner-panel login-panel">
+            <p class="eyebrow">AKSES PETUGAS</p>
+            <h2>Masuk untuk mulai scan</h2>
+            <form id="staff-login-form">
+                <label class="form-label" for="staff-username">Username</label>
+                <input class="form-control mb-3" id="staff-username" autocomplete="username" required>
+                <label class="form-label" for="staff-password">Password</label>
+                <input class="form-control mb-3" id="staff-password" type="password" autocomplete="current-password" required>
+                <button class="btn btn-light w-100" type="submit">Masuk</button>
+            </form>
+            <p id="staff-login-error" class="form-message error-message" role="alert"></p>
+        </section>
+
+        <section id="scanner-workspace" class="scanner-panel" hidden>
+            <div class="scanner-toolbar">
+                <p id="staff-label" class="mb-0"></p>
+                <button id="staff-logout" class="btn btn-outline-light btn-sm" type="button">Keluar</button>
+            </div>
+            <div id="qr-reader" class="qr-reader"></div>
+            <div id="scan-result" class="scan-result" role="status" aria-live="assertive">
+                <span class="result-mark" aria-hidden="true">+</span>
+                <div><strong>Siap scan</strong><p>Mulai kamera untuk memeriksa undangan.</p></div>
+            </div>
+            <div class="scanner-actions">
+                <button id="start-camera" class="btn btn-light" type="button">Mulai kamera</button>
+                <button id="next-scan" class="btn btn-outline-light" type="button" hidden>Scan berikutnya</button>
+            </div>
+            <p class="camera-hint">Kamera perlu izin browser dan koneksi HTTPS, atau localhost.</p>
+        </section>
+    </main>
+</body>
+</html>
