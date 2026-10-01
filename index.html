@@ -31,11 +31,64 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#e8eef6;color:#1b1b1d
 .floating-heart{position:absolute;bottom:-35px;pointer-events:none;user-select:none;animation:floatUpHeart linear forwards;will-change:transform,opacity;z-index:45;line-height:1}
 </style></head>
 <body>
+<!-- Welcome Screen / Cover Undangan -->
+<div id="welcome" class="fixed inset-0 z-50 flex items-center justify-center overflow-hidden transition-all duration-700 ease-out bg-deep">
+  <div class="absolute inset-0 -z-10 bg-cover bg-center transition-transform duration-1000 scale-105" style="background-image: url('assets/images/bg.jpg');"></div>
+  <div class="absolute inset-0 -z-10 bg-gradient-to-b from-deep/80 via-navy/85 to-deep/95 backdrop-blur-[2px]"></div>
+  
+  <div class="relative w-full max-w-md h-full min-h-screen flex flex-col justify-between items-center py-12 px-6 text-center text-white">
+    <!-- Top Header -->
+    <div class="pt-4">
+      <div class="inline-flex items-center justify-center gap-2 mb-3">
+        <span class="h-[1px] w-8 bg-gold/70"></span>
+        <p class="text-[11px] uppercase tracking-[0.28em] font-semibold text-gold drop-shadow">The Wedding Of</p>
+        <span class="h-[1px] w-8 bg-gold/70"></span>
+      </div>
+      
+      <h1 class="font-serif text-3xl font-bold tracking-wide text-white leading-tight drop-shadow-md">
+        Rendra Mukti<br>
+        <span class="text-xl font-normal text-gold italic font-serif">&amp;</span><br>
+        Gita Rahayu S.Ak
+      </h1>
+      
+      <p class="text-[11px] uppercase tracking-widest text-silver/90 mt-2 font-medium">Sabtu, 12 Desember 2026</p>
+    </div>
+
+    <!-- Center Photo Frame -->
+    <div class="my-auto py-3">
+      <div class="w-32 h-32 mx-auto rounded-full ring-4 ring-gold/40 shadow-2xl overflow-hidden relative border-2 border-white/40">
+        <img src="assets/images/gallery-01.jpg" alt="Rendra & Gita" class="w-full h-full object-cover">
+      </div>
+    </div>
+
+    <!-- Bottom Guest Greeting & Open Button -->
+    <div class="w-full max-w-xs pb-4">
+      <div class="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xl mb-5">
+        <p class="text-[11px] text-silver tracking-wide">Kepada Yth. Bapak/Ibu/Saudara/i:</p>
+        <h2 id="welcome-guest-name" class="font-serif text-xl font-bold text-white mt-1 break-words">
+          Tamu Undangan
+        </h2>
+        <p class="text-[9px] text-silver/80 italic mt-1.5 leading-snug">
+          *Mohon maaf apabila ada kesalahan pada penulisan nama/gelar
+        </p>
+      </div>
+
+      <button id="btn-open-invite" type="button" class="w-full py-3.5 px-6 rounded-full bg-gradient-to-r from-sapphire to-blue-600 hover:from-blue-600 hover:to-sapphire text-white font-bold text-sm tracking-wide shadow-xl flex items-center justify-center gap-2.5 transform active:scale-95 transition-all">
+        <span class="mi !text-lg">drafts</span>
+        <span>Buka Undangan</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <div class="mx-auto max-w-md min-h-screen bg-surface relative shadow-2xl">
 <div id="hearts-layer" class="fixed inset-x-0 bottom-0 top-0 max-w-md mx-auto pointer-events-none z-40 overflow-hidden" aria-hidden="true"></div>
 <header class="sticky top-0 z-30 h-14 px-5 flex items-center justify-between bg-surface/85 backdrop-blur border-b border-ice">
 <span class="font-serif font-semibold text-navy flex items-center gap-1.5"><span class="mi text-gold">auto_awesome</span>Rendra &amp; Gita</span>
-<button id="mus" class="w-9 h-9 rounded-full bg-ice text-sapphire grid place-items-center" aria-label="Musik"><span class="mi">music_note</span></button>
+<div class="flex items-center gap-2">
+  <button id="btn-reopen-welcome" class="text-[11px] font-bold text-sapphire bg-ice px-2.5 py-1 rounded-full flex items-center gap-1 hover:bg-sapphire hover:text-white transition-all"><span class="mi !text-sm">mail</span>Sampul</button>
+  <button id="mus" class="w-9 h-9 rounded-full bg-ice text-sapphire grid place-items-center" aria-label="Musik"><span class="mi">music_note</span></button>
+</div>
 </header>
 <main id="app" class="px-5 pt-2 pb-28"></main>
 <nav class="fixed bottom-0 inset-x-0 z-30 mx-auto max-w-md bg-white/90 backdrop-blur border-t border-ice flex justify-around pt-2 pb-[max(.5rem,env(safe-area-inset-bottom))]">
@@ -220,7 +273,7 @@ gallery(){const draw=f=>{$('#grid').innerHTML=C.gal.map((g,i)=>[g,i]).slice(4).f
 wishes(){let att=0,pax=1;const opts=[['✨','Hadir Bersama','Insya Allah berkenan hadir fisik'],['🕊️','Hadir Virtual','Menyaksikan secara virtual'],['🤍','Berhalangan Hadir','Turut mendoakan dari kejauhan']];
  const feed=(newId=null)=>{const w=LS('wishes',[]);$('#wc').textContent=w.length?`• ${w.length} doa`:'';$('#feed').innerHTML=w.length?w.map((x,i)=>{const isNew=newId&&(x.id===newId||x.t===newId);const delay=isNew?'0ms':`${Math.min(i*45,220)}ms`;const borderCls=isNew?'border border-sapphire/40 ring-2 ring-ice':'';return`<div class="feed-item ${isNew?'feed-item-new ':''}rounded-2xl bg-white shadow p-4 ${borderCls}" style="animation-delay:${delay}"><div class="flex justify-between text-xs items-center"><b class="text-navy flex items-center gap-1.5">${esc(x.n)}${isNew?'<span class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-ice text-sapphire">Baru</span>':''}</b><span class="text-silver">${ago(x.t)}</span></div><p class="text-[11px] text-sapphire mt-0.5 font-medium">${x.a}${x.a=='Hadir Bersama'?' ('+x.p+' Pax)':''}</p>${x.w?`<p class="text-[13px] text-slate mt-2 leading-relaxed">${esc(x.w)}</p>`:''}</div>`}).join(''):'<p class="text-center text-[13px] text-slate py-6">Belum ada doa. Jadilah yang pertama ✨</p>'};
  const form=()=>{$('#rsvp').innerHTML=`<div id="rsvp-form-wrap" class="transition-all"><p class="text-xs font-bold text-navy mb-2">Kepastian Kehadiran</p><div class="space-y-2">${opts.map((o,i)=>`<button type="button" data-a="${i}" class="w-full flex items-center gap-3 p-3 rounded-xl border-2 border-ice text-left"><span class="text-xl">${o[0]}</span><span class="flex-1"><b class="text-[13px] text-navy block">${o[1]}</b><span class="text-[11px] text-slate">${o[2]}</span></span></button>`).join('')}</div>
- <label class="block text-xs font-bold text-navy mt-4 mb-1">Nama Lengkap Tamu / Pasangan</label><input id="gn" class="w-full rounded-xl border-ice bg-mist text-sm" maxlength="60" placeholder="Nama Anda">
+ <label class="block text-xs font-bold text-navy mt-4 mb-1">Nama Lengkap Tamu / Pasangan</label><input id="gn" class="w-full rounded-xl border-ice bg-mist text-sm" maxlength="60" placeholder="Nama Anda" value="${esc(window.invitedGuestName||'')}">
  <div id="px"><p class="text-xs font-bold text-navy mt-4 mb-1">Jumlah Kehadiran (Maks. 2 Pax)</p><div class="flex items-center gap-4"><button type="button" data-p="-1" class="w-9 h-9 rounded-full bg-ice text-sapphire">${mi('remove')}</button><b id="pn" class="font-serif text-xl">1</b><button type="button" data-p="1" class="w-9 h-9 rounded-full bg-ice text-sapphire">${mi('add')}</button></div></div>
  <label class="block text-xs font-bold text-navy mt-4 mb-1">Untaian Doa &amp; Ucapan</label><textarea id="gw" rows="3" maxlength="400" class="w-full rounded-xl border-ice bg-mist text-sm" placeholder="Tulis doa terbaik Anda untuk Rendra &amp; Gita..."></textarea>
  <button id="sb" class="w-full mt-4 py-3 rounded-xl bg-navy text-white text-sm font-bold flex items-center justify-center gap-2">${mi('send')} Kirim Konfirmasi &amp; Terbitkan Tiket</button></div>`;paint()};
@@ -333,6 +386,13 @@ wishes(){let att=0,pax=1;const opts=[['✨','Hadir Bersama','Insya Allah berkena
      t:Date.now()
     };
     SV('me',me);
+    if(g.name){
+     window.invitedGuestName=g.name;
+     const el=$('#welcome-guest-name');
+     if(el)el.textContent=g.name;
+     const gn=$('#gn');
+     if(gn&&!gn.value)gn.value=g.name;
+    }
    }
   }catch(e){console.warn('Token lookup:',e)}
  }
@@ -359,6 +419,63 @@ const icon=()=>mb.innerHTML=mi(a.paused?'music_off':'music_note');
 mb.onclick=e=>{e.stopPropagation();started=1;a.paused?a.play().catch(()=>{}):a.pause()};
 addEventListener('pointerdown',()=>{if(!started){started=1;a.play().catch(()=>{})}},{once:true});
 a.onplay=a.onpause=icon;icon();
+
+/* ===== welcome page & open invitation ===== */
+(function setupWelcome(){
+ const welcome=$('#welcome');
+ const btnOpen=$('#btn-open-invite');
+ const btnReopen=$('#btn-reopen-welcome');
+
+ function getGuestName(){
+  const sp=new URLSearchParams(window.location.search);
+  const toParam=sp.get('to');
+  if(toParam&&toParam.trim())return toParam.trim();
+  const hashMatch=window.location.hash.match(/[#&?]to=([^&]+)/i);
+  if(hashMatch&&hashMatch[1]){
+   try{return decodeURIComponent(hashMatch[1].replace(/\+/g,' ')).trim();}catch{}
+  }
+  return null;
+ }
+
+ const gName=getGuestName();
+ if(gName){
+  window.invitedGuestName=gName;
+  const el=$('#welcome-guest-name');
+  if(el)el.textContent=gName;
+  const gn=$('#gn');
+  if(gn&&!gn.value)gn.value=gName;
+ }
+
+ function openInvitation(){
+  if(a&&a.paused){
+   started=1;
+   a.play().catch(()=>{});
+   icon();
+  }
+  if(welcome){
+   welcome.classList.add('opacity-0','pointer-events-none','scale-105');
+   setTimeout(()=>{welcome.style.display='none';},700);
+  }
+  if(window.spawnHeart){
+   window.spawnHeart(30);
+   setTimeout(()=>window.spawnHeart(70),250);
+   setTimeout(()=>window.spawnHeart(50),500);
+  }
+ }
+
+ function reopenCover(){
+  if(welcome){
+   welcome.style.display='flex';
+   welcome.offsetHeight;
+   welcome.classList.remove('opacity-0','pointer-events-none','scale-105');
+  }
+ }
+
+ if(btnOpen)btnOpen.addEventListener('click',openInvitation);
+ if(btnReopen)btnReopen.addEventListener('click',reopenCover);
+ window.openInvitation=openInvitation;
+ window.reopenCover=reopenCover;
+})();
 
 /* ===== floating hearts animation ===== */
 (function setupFloatingHearts(){
