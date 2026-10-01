@@ -9,6 +9,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <script>tailwind.config={theme:{extend:{colors:{navy:'#0b192c',deep:'#070f1a',sapphire:'#2563eb',gold:'#d4af37',ice:'#e0f2fe',mist:'#f0f7ff',slate:'#486581',silver:'#9fb3c8',surface:'#fbf9fa'},fontFamily:{serif:['Playfair Display','serif'],sans:['Plus Jakarta Sans','sans-serif']}}}}</script>
 <style>
+html{scroll-behavior:smooth}
 body{font-family:'Plus Jakarta Sans',sans-serif;background:#e8eef6;color:#1b1b1d}
 .mi{font-family:'Material Symbols Outlined';font-style:normal;line-height:1;display:inline-block;font-variation-settings:'FILL' 0;font-size:20px;vertical-align:middle}
 .ph{position:relative;overflow:hidden;background:linear-gradient(135deg,#d6e3fe,#e0f2fe 50%,#dce1ff)}
@@ -92,10 +93,10 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:#e8eef6;color:#1b1b1d
 </header>
 <main id="app" class="px-5 pt-2 pb-28"></main>
 <nav class="fixed bottom-0 inset-x-0 z-30 mx-auto max-w-md bg-white/90 backdrop-blur border-t border-ice flex justify-around pt-2 pb-[max(.5rem,env(safe-area-inset-bottom))]">
-<a href="#/event" data-t="event" class="tab text-silver text-center text-[10px] font-bold w-16"><span class="mi block">church</span>Event</a>
-<a href="#/story" data-t="story" class="tab text-silver text-center text-[10px] font-bold w-16"><span class="mi block">favorite</span>Story</a>
-<a href="#/gallery" data-t="gallery" class="tab text-silver text-center text-[10px] font-bold w-16"><span class="mi block">photo_library</span>Gallery</a>
-<a href="#/wishes" data-t="wishes" class="tab text-silver text-center text-[10px] font-bold w-16"><span class="mi block">mark_email_read</span>Wishes</a>
+<a href="#event" data-t="event" class="tab text-silver text-center text-[10px] font-bold w-16"><span class="mi block">church</span>Event</a>
+<a href="#story" data-t="story" class="tab text-silver text-center text-[10px] font-bold w-16"><span class="mi block">favorite</span>Story</a>
+<a href="#gallery" data-t="gallery" class="tab text-silver text-center text-[10px] font-bold w-16"><span class="mi block">photo_library</span>Gallery</a>
+<a href="#wishes" data-t="wishes" class="tab text-silver text-center text-[10px] font-bold w-16"><span class="mi block">mark_email_read</span>Wishes</a>
 </nav></div>
 
 <audio id="bgm" src="assets/music/bgm.mp3" loop preload="none"></audio>
@@ -398,12 +399,13 @@ wishes(){let att=0,pax=1;const opts=[['✨','Hadir Bersama','Insya Allah berkena
  }
 })();
 
-/* ===== router ===== */
-function go(){clearInterval(cd);const k=pages[location.hash.slice(2)]?location.hash.slice(2):'event';
- $('#app').innerHTML=`<div class="view">${pages[k]()}</div>`;bind[k]&&bind[k]();
- $$('.tab').forEach(t=>t.classList.toggle('on',t.dataset.t==k));scrollTo(0,0);
- const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}}),{threshold:.12});$$('.rv').forEach(e=>io.observe(e))}
-addEventListener('hashchange',go);go();
+/* ===== render all sections & nav spy ===== */
+$('#app').innerHTML=Object.keys(pages).map(k=>`<div id="${k}" class="scroll-mt-16 mb-8">${pages[k]()}</div>`).join('');
+Object.keys(bind).forEach(k=>bind[k]&&bind[k]());
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('on');io.unobserve(e.target)}}),{threshold:.12});
+$$('.rv').forEach(e=>io.observe(e));
+const navIo=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){$$('.tab').forEach(t=>t.classList.toggle('on',t.dataset.t==e.target.id))}}),{rootMargin:'-50% 0px -50% 0px'});
+Object.keys(pages).forEach(k=>navIo.observe($('#'+k)));
 
 /* ===== lightbox & like (delegasi) ===== */
 let cur=0;const lb=$('#lb');
