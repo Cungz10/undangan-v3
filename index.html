@@ -199,7 +199,7 @@ const evCard=e=>`<section class="rv rounded-2xl bg-white shadow-lg overflow-hidd
 /* ===== pages ===== */
 const pages={
 event:()=>`<section class="rv text-center py-8"><span class="inline-flex items-center gap-1 px-3.5 py-1 rounded-full bg-ice text-sapphire border border-sapphire/20 text-[10px] font-bold tracking-widest uppercase">${mi('favorite','!text-sm')} Walimatul ‘Ursy</span>
-<h1 class="font-serif text-3xl font-semibold text-navy mt-4">${C.fullName}</h1><p class="font-serif italic text-2xl text-gold mt-2">${C.date}</p>
+<h1 class="font-serif text-3xl font-semibold text-navy mt-4 leading-tight">${C.groom.name}<br><span class="text-xl font-normal text-gold italic font-serif">&amp;</span><br>${C.bride.name}</h1><p class="font-serif italic text-2xl text-gold mt-2">${C.date}</p>
 <p class="text-[13px] text-slate mt-5 px-3">${C.verse}</p><p class="text-[11px] font-bold tracking-widest text-sapphire mt-2">${C.ref}</p>
 <div class="grid grid-cols-4 gap-2 mt-6">${['Hari','Jam','Menit','Detik'].map(l=>`<div class="rounded-xl bg-white shadow p-2"><div class="font-serif text-2xl font-bold text-navy" data-u>00</div><div class="text-[9px] uppercase tracking-wider text-slate">${l}</div></div>`).join('')}</div></section>
 
