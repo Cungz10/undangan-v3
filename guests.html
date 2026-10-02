@@ -100,12 +100,15 @@
             </div>
 
             <section class="tool-panel list-panel">
-                <div class="list-heading">
+                <div class="list-heading flex-wrap gap-2 d-flex justify-content-between align-items-center mb-3">
                     <div>
-                        <p class="eyebrow">ROSTER</p>
-                        <h2>Tamu undangan</h2>
+                        <p class="eyebrow mb-0">ROSTER</p>
+                        <h2 class="mb-0">Tamu undangan</h2>
                     </div>
-                    <button id="refresh-guests" class="btn btn-outline-dark btn-sm" type="button">Muat ulang</button>
+                    <div class="d-flex gap-2">
+                        <input type="text" id="search-guest" class="form-control form-control-sm" placeholder="Cari nama/kelompok..." style="min-width: 200px;">
+                        <button id="refresh-guests" class="btn btn-outline-dark btn-sm text-nowrap" type="button">Muat ulang</button>
+                    </div>
                 </div>
                 <div class="table-responsive">
                     <table class="table align-middle mb-0">

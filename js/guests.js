@@ -104,80 +104,108 @@ async function copyToClipboard(text) {
     }
 }
 
-async function loadGuests() {
+let cachedGuests = [];
+
+function renderGuestList() {
     guestList.replaceChildren();
-    try {
-        const { guests } = await api('/api/checkin/invitations');
-        document.getElementById('guest-count').textContent = `${guests.length} tamu terdaftar`;
-        document.getElementById('empty-state').hidden = guests.length > 0;
+    
+    const query = (document.getElementById('search-guest')?.value || '').toLowerCase();
+    const filtered = cachedGuests.filter(g => 
+        g.name.toLowerCase().includes(query) || 
+        (g.group_name && g.group_name.toLowerCase().includes(query))
+    );
 
-        guests.forEach((guest) => {
-            const row = document.createElement('tr');
-            const nameCell = document.createElement('td');
-            const groupCell = document.createElement('td');
-            const paxCell = document.createElement('td');
-            const statusCell = document.createElement('td');
-            const actionCell = document.createElement('td');
-            const actions = document.createElement('div');
-            nameCell.textContent = guest.name;
-            groupCell.textContent = guest.group_name || '-';
-            paxCell.textContent = String(guest.pax ?? 1);
-            statusCell.appendChild(guestStatus(guest));
-            actions.className = 'row-actions';
+    document.getElementById('guest-count').textContent = `${cachedGuests.length} tamu terdaftar`;
+    const emptyState = document.getElementById('empty-state');
+    emptyState.hidden = filtered.length > 0;
+    
+    if (filtered.length === 0 && cachedGuests.length > 0) {
+        emptyState.textContent = 'Tidak ada tamu yang cocok dengan pencarian.';
+        emptyState.hidden = false;
+    } else if (cachedGuests.length === 0) {
+        emptyState.textContent = 'Belum ada tamu. Tambahkan nama untuk menerbitkan QR.';
+        emptyState.hidden = false;
+    }
 
-            if (guest.checked_in_at) {
-                const checkinTime = document.createElement('small');
-                checkinTime.className = 'd-block text-secondary mt-1';
-                checkinTime.textContent = new Date(guest.checked_in_at).toLocaleString('id-ID');
-                statusCell.appendChild(checkinTime);
-            }
+    filtered.forEach((guest) => {
+        const row = document.createElement('tr');
+        const nameCell = document.createElement('td');
+        const groupCell = document.createElement('td');
+        const paxCell = document.createElement('td');
+        const statusCell = document.createElement('td');
+        const actionCell = document.createElement('td');
+        const actions = document.createElement('div');
+        nameCell.textContent = guest.name;
+        groupCell.textContent = guest.group_name || '-';
+        paxCell.textContent = String(guest.pax ?? 1);
+        statusCell.appendChild(guestStatus(guest));
+        actions.className = 'row-actions d-flex justify-content-end gap-1 flex-wrap';
 
-            if (guest.token && !guest.checked_in_at) {
-                actions.appendChild(actionButton('Salin link', 'btn btn-outline-dark btn-sm', async (e) => {
-                    const ok = await copyToClipboard(inviteLink(guest.token));
-                    e.currentTarget.textContent = ok ? 'Tersalin!' : 'Gagal, lihat QR';
-                    setTimeout(() => { e.currentTarget.textContent = 'Salin link'; }, 1500);
-                }));
-                actions.appendChild(actionButton('Lihat QR', 'btn btn-outline-dark btn-sm', () => showQr(guest, guest.token)));
-            }
+        if (guest.checked_in_at) {
+            const checkinTime = document.createElement('small');
+            checkinTime.className = 'd-block text-secondary mt-1';
+            checkinTime.textContent = new Date(guest.checked_in_at).toLocaleString('id-ID');
+            statusCell.appendChild(checkinTime);
+        }
 
-            if (!guest.checked_in_at) {
-                const issueLabel = guest.needs_reissue ? 'Buat QR' : 'QR baru';
-                actions.appendChild(actionButton(issueLabel, 'btn btn-outline-dark btn-sm', async () => {
-                    if (!guest.needs_reissue && !window.confirm(`Terbitkan QR baru untuk ${guest.name}? QR/link sebelumnya akan tidak berlaku.`)) {
+        if (guest.token && !guest.checked_in_at) {
+            actions.appendChild(actionButton('Salin link', 'btn btn-outline-primary btn-sm', async (e) => {
+                const ok = await copyToClipboard(inviteLink(guest.token));
+                e.currentTarget.textContent = ok ? 'Tersalin!' : 'Gagal';
+                setTimeout(() => { e.currentTarget.textContent = 'Salin link'; }, 1500);
+            }));
+            actions.appendChild(actionButton('Lihat QR', 'btn btn-outline-dark btn-sm', () => showQr(guest, guest.token)));
+            
+            actions.appendChild(actionButton('Kirim WA', 'btn btn-success btn-sm', () => {
+                const text = `Halo ${guest.name},\n\nBerikut adalah link undangan dan tiket check-in acara pernikahan kami. Silakan buka link ini:\n${inviteLink(guest.token)}\n\nTerima kasih!`;
+                window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+            }));
+        }
+
+        if (!guest.checked_in_at) {
+            const issueLabel = guest.needs_reissue ? 'Buat QR' : 'QR baru';
+            actions.appendChild(actionButton(issueLabel, 'btn btn-outline-secondary btn-sm', async () => {
+                if (!guest.needs_reissue && !window.confirm(`Terbitkan QR baru untuk ${guest.name}? QR/link sebelumnya akan tidak berlaku.`)) {
+                    return;
+                }
+                try {
+                    const result = await api(`/api/checkin/invitations/${guest.uuid}/rotate`, { method: 'POST' });
+                    await showQr(result.guest, result.token);
+                    setGuestMessage(`QR untuk ${guest.name} siap. Salin link atau unduh QR-nya.`);
+                    await loadGuests();
+                } catch (error) {
+                    setGuestMessage(error.message, true);
+                }
+            }));
+
+            if (!guest.revoked_at) {
+                actions.appendChild(actionButton('Cabut', 'btn btn-outline-danger btn-sm', async () => {
+                    if (!window.confirm(`Cabut undangan ${guest.name}?`)) {
                         return;
                     }
                     try {
-                        const result = await api(`/api/checkin/invitations/${guest.uuid}/rotate`, { method: 'POST' });
-                        await showQr(result.guest, result.token);
-                        setGuestMessage(`QR untuk ${guest.name} siap. Salin link atau unduh QR-nya.`);
+                        await api(`/api/checkin/invitations/${guest.uuid}`, { method: 'DELETE' });
                         await loadGuests();
                     } catch (error) {
                         setGuestMessage(error.message, true);
                     }
                 }));
-
-                if (!guest.revoked_at) {
-                    actions.appendChild(actionButton('Cabut', 'btn btn-outline-danger btn-sm', async () => {
-                        if (!window.confirm(`Cabut undangan ${guest.name}?`)) {
-                            return;
-                        }
-                        try {
-                            await api(`/api/checkin/invitations/${guest.uuid}`, { method: 'DELETE' });
-                            await loadGuests();
-                        } catch (error) {
-                            setGuestMessage(error.message, true);
-                        }
-                    }));
-                }
             }
+        }
 
-            actionCell.className = 'text-end';
-            actionCell.appendChild(actions);
-            row.append(nameCell, groupCell, paxCell, statusCell, actionCell);
-            guestList.appendChild(row);
-        });
+        actionCell.className = 'text-end';
+        actionCell.appendChild(actions);
+        row.append(nameCell, groupCell, paxCell, statusCell, actionCell);
+        guestList.appendChild(row);
+    });
+}
 
+async function loadGuests() {
+    guestList.replaceChildren();
+    try {
+        const { guests } = await api('/api/checkin/invitations');
+        cachedGuests = guests;
+        renderGuestList();
         return guests;
     } catch (error) {
         if (/401|Unauthorized|Token/i.test(error.message)) {
@@ -399,6 +427,7 @@ async function printSheet() {
 document.getElementById('login-form').addEventListener('submit', login);
 document.getElementById('guest-form').addEventListener('submit', createGuest);
 document.getElementById('refresh-guests').addEventListener('click', loadGuests);
+document.getElementById('search-guest')?.addEventListener('input', renderGuestList);
 document.getElementById('admin-logout').addEventListener('click', () => {
     sessionStorage.removeItem(tokenKey);
     manager.hidden = true;

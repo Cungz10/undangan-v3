@@ -503,6 +503,7 @@ ${C.gifts.map(g => `<div class="p-3.5 rounded-xl bg-mist border border-ice flex 
         };
         const paint = () => { $$('[data-a]').forEach(b => b.classList.toggle('sel', +b.dataset.a == att)); $('#px').hidden = att != 0; $('#pn').textContent = pax };
         const tix = x => {
+          const isHadir = x.a === 'Hadir Bersama' || x.a === 'Sudah Masuk / Hadir';
           $('#rsvp').innerHTML = `<div class="pass-scale-in text-center">
   ${mi('check_circle', '!text-5xl text-sapphire')}
   <h3 class="font-serif text-xl font-bold text-navy mt-2">Alhamdulillah, Terkonfirmasi!</h3>
@@ -516,16 +517,17 @@ ${C.gifts.map(g => `<div class="p-3.5 rounded-xl bg-mist border border-ice flex 
         </p>
         <p class="font-mono text-xs text-silver mt-0.5">${esc(x.id || 'RG-PASS')}</p>
       </div>
-      <span class="px-2.5 py-1 rounded-full bg-sapphire/50 text-[10px] font-bold text-ice border border-sapphire/60">Check-in Pass</span>
+      <span class="px-2.5 py-1 rounded-full bg-sapphire/50 text-[10px] font-bold text-ice border border-sapphire/60">${isHadir ? 'Check-in Pass' : 'RSVP Pass'}</span>
     </div>
 
     <div class="my-3 border-t border-dashed border-white/20"></div>
 
     <p class="font-serif text-2xl font-bold text-white">${esc(x.n)}</p>
     <p class="text-xs text-silver mt-1 flex items-center gap-1.5">
-      ${mi('verified', '!text-sm text-gold')} ${esc(x.a)}${x.a == 'Hadir Bersama' ? ' • <b>' + x.p + ' Pax</b>' : ''}
+      ${mi('verified', '!text-sm text-gold')} ${esc(x.a)}${isHadir && x.p ? ' • <b>' + x.p + ' Pax</b>' : ''}
     </p>
 
+    ${isHadir ? `
     <!-- QR Code Canvas Container -->
     <div class="my-4 p-3 bg-white rounded-2xl text-center shadow-inner">
       <canvas id="pass-qr-canvas" class="mx-auto block" style="width: 200px; height: 200px; max-width: 100%;"></canvas>
@@ -541,12 +543,18 @@ ${C.gifts.map(g => `<div class="p-3.5 rounded-xl bg-mist border border-ice flex 
         ${mi('content_copy', '!text-sm')} Salin
       </button>
     </div>
+    ` : `
+    <div class="my-4 p-4 rounded-xl bg-white/5 text-center border border-white/10">
+      <p class="text-[13px] text-silver">Terima kasih atas doa &amp; konfirmasinya.</p>
+    </div>
+    `}
   </div>
 
   <button id="re" class="mt-4 text-xs font-bold text-sapphire hover:underline">Ubah konfirmasi kehadiran</button>
 </div>`;
-          drawPassQr(x.token || x.id);
+          if (isHadir) drawPassQr(x.token || x.id);
         };
+        window.renderRsvpMe = tix;
 
         if (!LS('wishes', null)) { SV('wishes', [{ n: 'Keluarga Besar Bpk. Ahmad', a: 'Hadir Bersama', p: 2, w: 'Selamat berbahagia untuk Rendra & Gita! Semoga menjadi keluarga yang sakinah, mawaddah, warahmah.', t: Date.now() - 7200000 }, { n: 'Sahabat Kuliah', a: 'Hadir Bersama', p: 1, w: 'Barakallahu lakuma wa baraka alaika wa jamaa bainakuma fii khoir. Lancar sampai hari H ya!', t: Date.now() - 3600000 }]) }
         const me = LS('me', null); me ? tix(me) : form(); feed();
@@ -616,6 +624,9 @@ ${C.gifts.map(g => `<div class="p-3.5 rounded-xl bg-mist border border-ice flex 
               if (el) el.textContent = g.name;
               const gn = $('#gn');
               if (gn && !gn.value) gn.value = g.name;
+            }
+            if (window.renderRsvpMe) {
+              window.renderRsvpMe(me);
             }
           }
         } catch (e) { console.warn('Token lookup:', e) }
