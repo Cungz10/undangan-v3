@@ -599,34 +599,42 @@ ${C.gifts.map(g => `<div class="p-3.5 rounded-xl bg-mist border border-ice flex 
       const hashMatch = location.hash.match(/[#&?]t=([a-f0-9]{64})/i);
       const searchMatch = location.search.match(/[?&]t=([a-f0-9]{64})/i);
       const token = (hashMatch && hashMatch[1]) || (searchMatch && searchMatch[1]);
-      if (token) {
+      
+      const toMatch = location.search.match(/[?&]to=([^&]+)/i) || location.hash.match(/[#&?]to=([^&]+)/i);
+      const toName = toMatch ? decodeURIComponent(toMatch[1].replace(/\+/g, ' ')).trim() : null;
+
+      if (token || toName) {
         try {
+          const payload = token ? { token } : { name: toName };
           const res = await fetch('/api/checkin/lookup', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token })
+            body: JSON.stringify(payload)
           });
           const data = await res.json();
           if (data?.data) {
             const g = data.data;
-            const me = {
-              n: g.name,
-              a: g.checked_in ? 'Sudah Masuk / Hadir' : 'Hadir Bersama',
-              p: g.pax,
-              token: token,
-              id: 'RG-' + token.slice(0, 6).toUpperCase(),
-              t: Date.now()
-            };
-            SV('me', me);
+            const validToken = g.token || token;
+            if (validToken) {
+              const me = {
+                n: g.name,
+                a: g.checked_in ? 'Sudah Masuk / Hadir' : 'Hadir Bersama',
+                p: g.pax,
+                token: validToken,
+                id: 'RG-' + validToken.slice(0, 6).toUpperCase(),
+                t: Date.now()
+              };
+              SV('me', me);
+              if (window.renderRsvpMe) {
+                window.renderRsvpMe(me);
+              }
+            }
             if (g.name) {
               window.invitedGuestName = g.name;
               const el = $('#welcome-guest-name');
               if (el) el.textContent = g.name;
               const gn = $('#gn');
               if (gn && !gn.value) gn.value = g.name;
-            }
-            if (window.renderRsvpMe) {
-              window.renderRsvpMe(me);
             }
           }
         } catch (e) { console.warn('Token lookup:', e) }
