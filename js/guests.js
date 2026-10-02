@@ -17,10 +17,10 @@ const apiUrl = (path) => new URL(path, document.body.getAttribute('data-url') ||
 /** Base URL of the invitation site itself (guests.html lives next to index.html). */
 const inviteBaseUrl = () => new URL('./', window.location.href);
 
-/** @param {string} token */
-function inviteLink(token) {
+/** @param {object} guest */
+function inviteLink(guest) {
     const url = inviteBaseUrl();
-    url.hash = `t=${token}`;
+    url.searchParams.set('to', guest.name);
     return url.toString();
 }
 
@@ -150,14 +150,14 @@ function renderGuestList() {
 
         if (guest.token && !guest.checked_in_at) {
             actions.appendChild(actionButton('Salin link', 'btn btn-outline-primary btn-sm', async (e) => {
-                const ok = await copyToClipboard(inviteLink(guest.token));
+                const ok = await copyToClipboard(inviteLink(guest));
                 e.currentTarget.textContent = ok ? 'Tersalin!' : 'Gagal';
                 setTimeout(() => { e.currentTarget.textContent = 'Salin link'; }, 1500);
             }));
             actions.appendChild(actionButton('Lihat QR', 'btn btn-outline-dark btn-sm', () => showQr(guest, guest.token)));
             
             actions.appendChild(actionButton('Kirim WA', 'btn btn-success btn-sm', () => {
-                const text = `Halo ${guest.name},\n\nBerikut adalah link undangan dan tiket check-in acara pernikahan kami. Silakan buka link ini:\n${inviteLink(guest.token)}\n\nTerima kasih!`;
+                const text = `Halo ${guest.name},\n\nBerikut adalah link undangan dan tiket check-in acara pernikahan kami. Silakan buka link ini:\n${inviteLink(guest)}\n\nTerima kasih!`;
                 window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
             }));
         }
@@ -399,7 +399,7 @@ async function downloadZip() {
 function downloadCsv() {
     if (lastImportedWithTokens.length === 0) {return;}
     const rows = lastImportedWithTokens.map(({ guest, token }) => ({
-        name: guest.name, group_name: guest.group_name || '', pax: guest.pax, link: inviteLink(token),
+        name: guest.name, group_name: guest.group_name || '', pax: guest.pax, link: inviteLink(guest),
     }));
     downloadBlob(new Blob([buildGuestCsv(rows)], { type: 'text/csv;charset=utf-8' }), 'tamu-link.csv');
 }

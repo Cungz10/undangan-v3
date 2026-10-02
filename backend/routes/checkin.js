@@ -123,18 +123,37 @@ router.post('/lookup', lookupLimiter, async (req, res) => {
     res.set('Cache-Control', 'no-store');
     const notFound = () => res.status(404).json({ error: ['Undangan tidak ditemukan'] });
 
-    const { token } = req.body || {};
-    if (typeof token !== 'string' || !TOKEN_RE.test(token)) {
-        return notFound();
-    }
-
+    const { token, name } = req.body || {};
+    
     try {
-        const row = await getDb().prepare(`
-            SELECT g.name, g.group_name, g.pax, g.revoked_at, c.checked_in_at
-            FROM invited_guests g
-            LEFT JOIN check_ins c ON c.guest_id = g.id
-            WHERE g.token_hash = ?
-        `).get(hashToken(token.toLowerCase()));
+        let row;
+        let validToken = token;
+
+        if (typeof token === 'string' && TOKEN_RE.test(token)) {
+            row = await getDb().prepare(`
+                SELECT g.uuid, g.name, g.group_name, g.pax, g.token_version, g.token_hash, g.revoked_at, c.checked_in_at
+                FROM invited_guests g
+                LEFT JOIN check_ins c ON c.guest_id = g.id
+                WHERE g.token_hash = ?
+            `).get(hashToken(token.toLowerCase()));
+        } else if (typeof name === 'string' && name.trim().length > 0) {
+            row = await getDb().prepare(`
+                SELECT g.uuid, g.name, g.group_name, g.pax, g.token_version, g.token_hash, g.revoked_at, c.checked_in_at
+                FROM invited_guests g
+                LEFT JOIN check_ins c ON c.guest_id = g.id
+                WHERE g.name = ?
+                ORDER BY g.id DESC LIMIT 1
+            `).get(name.trim());
+
+            if (row && !row.revoked_at && isConfigured()) {
+                const derived = deriveToken(row.uuid, row.token_version);
+                if (hashToken(derived) === row.token_hash) {
+                    validToken = derived;
+                }
+            }
+        } else {
+            return notFound();
+        }
 
         if (!row || row.revoked_at) {
             return notFound();
@@ -147,6 +166,7 @@ router.post('/lookup', lookupLimiter, async (req, res) => {
                 group_name: row.group_name,
                 pax: row.pax,
                 checked_in: Boolean(row.checked_in_at),
+                token: validToken
             },
             error: null,
         });
