@@ -157,7 +157,25 @@ function renderGuestList() {
             actions.appendChild(actionButton('Lihat QR', 'btn btn-outline-dark btn-sm', () => showQr(guest, guest.token)));
             
             actions.appendChild(actionButton('Kirim WA', 'btn btn-success btn-sm', () => {
-                const text = `Halo ${guest.name},\n\nBerikut adalah link undangan dan tiket check-in acara pernikahan kami. Silakan buka link ini:\n${inviteLink(guest)}\n\nTerima kasih!`;
+                const text = `Yth. Bapak/Ibu/Saudara/i
+*${guest.name}*
+Di Tempat
+-----------
+Dengan segala kerendahan hati , kami mengundang Bapak/Ibu/Saudara/i dan teman-teman untuk menghadiri acara pernikahan kami,
+===========
+*Rendra Mukti & Gita Rahayu*
+===========
+Pada:
+🗓️ Tanggal: 12-12-2026
+🕛 Pukul: 11:00 - Selesai
+📍 Lokasi: Permata Ruby, Karang Pawitan, Karawang
+
+Link undangan bisa diakses lengkap di:
+${inviteLink(guest)}
+
+Merupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan untuk hadir di acara kami
+Mohon maaf perihal undangan hanya di bagikan melalui pesan ini
+Terima kasih banyak atas perhatiannya`;
                 window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
             }));
         }
