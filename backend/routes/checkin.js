@@ -98,18 +98,19 @@ router.post('/staff/session', staffLoginLimiter, (req, res) => {
     if (typeof username !== 'string' || typeof password !== 'string') {
         return res.status(400).json({ error: ['Username and password are required'] });
     }
-    const isValid = (username === 'staff' && password === 'staff123')
-        || (username === 'petugas' && (password === 'petugas123' || (staffPasswordHash && bcrypt.compareSync(password, staffPasswordHash))))
-        || (staffPasswordHash && username === staffUsername && bcrypt.compareSync(password, staffPasswordHash));
+
+    // Only allow login when CHECKIN_USERNAME + CHECKIN_PASSWORD are configured in .env
+    const isValid = staffPasswordHash
+        && username === staffUsername
+        && bcrypt.compareSync(password, staffPasswordHash);
 
     if (!isValid) {
         return res.status(401).json({ error: ['Invalid username or password'] });
     }
 
-    const activeUser = username || staffUsername || 'staff';
     return res.status(200).json({
         code: 200,
-        data: { token: generateCheckinToken(activeUser), username: activeUser },
+        data: { token: generateCheckinToken(username), username },
         error: null,
     });
 });

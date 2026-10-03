@@ -146,10 +146,12 @@ app.post('/api/rsvp', async (req, res) => {
                 }
             });
         }
+        // Name was empty or missing
+        return res.status(400).json({ code: 400, status: false, error: 'Nama wajib diisi' });
     } catch (e) {
-        console.warn('RSVP DB save error:', e.message);
+        console.error('RSVP DB save error:', e.message);
+        return res.status(500).json({ code: 500, status: false, error: 'Gagal menyimpan RSVP, silakan coba lagi' });
     }
-    return res.status(200).json({ code: 200, status: true });
 });
 
 // Health check endpoint
