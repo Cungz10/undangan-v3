@@ -221,6 +221,192 @@
       line-height: 1
     }
   </style>
+  <style id="ios-glass">
+    /* ===== iOS Glassmorphism layer (override, tanpa ubah markup) ===== */
+    :root {
+      --g-blur: 22px;
+      --g-fill: rgba(255, 255, 255, .42);
+      --g-fill-soft: rgba(255, 255, 255, .30);
+      --g-edge: rgba(255, 255, 255, .70);
+      --g-shadow: 0 10px 32px -8px rgba(30, 64, 140, .22), 0 2px 6px rgba(30, 64, 140, .06);
+      --g-hl: inset 0 1px 0 rgba(255, 255, 255, .85), inset 0 -1px 0 rgba(255, 255, 255, .25);
+    }
+
+    html body {
+      background:
+        radial-gradient(60vmax 60vmax at 8% 4%, #bfd9ff 0%, transparent 60%),
+        radial-gradient(55vmax 55vmax at 98% 22%, #d9ccff 0%, transparent 58%),
+        radial-gradient(60vmax 60vmax at 20% 96%, #b8ecf5 0%, transparent 60%),
+        radial-gradient(45vmax 45vmax at 92% 92%, #ffd9ec 0%, transparent 60%),
+        #e6efff;
+      background-attachment: fixed;
+      -webkit-font-smoothing: antialiased
+    }
+
+    html body .max-w-md.bg-surface {
+      background: transparent;
+      box-shadow: none
+    }
+
+    /* Kartu utama */
+    html body .rounded-2xl.bg-white:not(.shadow-inner),
+    html body .rounded-xl.bg-white {
+      background: var(--g-fill);
+      -webkit-backdrop-filter: blur(var(--g-blur)) saturate(180%);
+      backdrop-filter: blur(var(--g-blur)) saturate(180%);
+      border: 1px solid var(--g-edge);
+      box-shadow: var(--g-shadow), var(--g-hl);
+      border-radius: 26px
+    }
+
+    html body .rounded-xl.bg-white {
+      border-radius: 18px
+    }
+
+    html body .feed-item.bg-white {
+      -webkit-backdrop-filter: blur(14px) saturate(160%);
+      backdrop-filter: blur(14px) saturate(160%);
+      border-radius: 22px
+    }
+
+    /* Chip, kolom info, input */
+    html body .bg-mist {
+      background: var(--g-fill-soft);
+      border: 1px solid rgba(255, 255, 255, .55);
+      box-shadow: var(--g-hl)
+    }
+
+    html body .bg-ice {
+      background: rgba(255, 255, 255, .55);
+      box-shadow: var(--g-hl)
+    }
+
+    html body input.bg-mist,
+    html body textarea.bg-mist {
+      background: rgba(255, 255, 255, .5);
+      border: 1px solid rgba(255, 255, 255, .8);
+      border-radius: 16px;
+      box-shadow: inset 0 1px 3px rgba(30, 64, 140, .10)
+    }
+
+    html body input.bg-mist:focus,
+    html body textarea.bg-mist:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, .18)
+    }
+
+    html body .sel {
+      background: rgba(255, 255, 255, .75);
+      border-color: #2563eb !important;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, .14)
+    }
+
+    /* Header kaca */
+    html body header.sticky {
+      background: rgba(255, 255, 255, .38);
+      -webkit-backdrop-filter: blur(26px) saturate(190%);
+      backdrop-filter: blur(26px) saturate(190%);
+      border-bottom: 1px solid rgba(255, 255, 255, .6);
+      box-shadow: 0 1px 0 rgba(255, 255, 255, .5)
+    }
+
+    /* Bottom nav: floating pill ala tab bar iOS */
+    html body nav.fixed {
+      left: 14px;
+      right: 14px;
+      bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+      padding: 6px;
+      width: auto;
+      background: rgba(255, 255, 255, .42);
+      -webkit-backdrop-filter: blur(28px) saturate(200%);
+      backdrop-filter: blur(28px) saturate(200%);
+      border: 1px solid rgba(255, 255, 255, .75);
+      border-radius: 30px;
+      box-shadow: 0 16px 40px -10px rgba(30, 64, 140, .35), var(--g-hl)
+    }
+
+    html body nav .tab {
+      border-radius: 22px;
+      padding: 6px 0;
+      transition: background .25s, color .25s, transform .2s
+    }
+
+    html body nav .tab:active {
+      transform: scale(.94)
+    }
+
+    html body nav .tab.on {
+      background: rgba(255, 255, 255, .85);
+      box-shadow: 0 4px 12px -2px rgba(30, 64, 140, .2), var(--g-hl)
+    }
+
+    /* Tombol gelap jadi kaca gelap */
+    html body button.bg-navy,
+    html body a.bg-navy {
+      background: rgba(11, 25, 44, .78);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, .18);
+      box-shadow: 0 8px 20px -6px rgba(11, 25, 44, .5), inset 0 1px 0 rgba(255, 255, 255, .22)
+    }
+
+    html body #toast {
+      background: rgba(11, 25, 44, .7);
+      -webkit-backdrop-filter: blur(20px) saturate(160%);
+      backdrop-filter: blur(20px) saturate(160%);
+      border: 1px solid rgba(255, 255, 255, .2)
+    }
+
+    /* Lightbox & welcome */
+    html body #lb {
+      background: rgba(7, 15, 26, .55);
+      -webkit-backdrop-filter: blur(30px) saturate(150%);
+      backdrop-filter: blur(30px) saturate(150%)
+    }
+
+    html body #lb .bg-white\/10 {
+      background: rgba(255, 255, 255, .16);
+      border: 1px solid rgba(255, 255, 255, .28);
+      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: blur(14px)
+    }
+
+    html body #welcome .backdrop-blur-md {
+      background: rgba(255, 255, 255, .14);
+      -webkit-backdrop-filter: blur(26px) saturate(180%);
+      backdrop-filter: blur(26px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, .38);
+      border-radius: 28px;
+      box-shadow: 0 20px 50px -12px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 255, 255, .5)
+    }
+
+    html body #btn-open-invite {
+      border: 1px solid rgba(255, 255, 255, .35);
+      box-shadow: 0 14px 30px -8px rgba(37, 99, 235, .6), inset 0 1px 0 rgba(255, 255, 255, .5)
+    }
+
+    /* Kartu tiket gelap tetap kaca */
+    html body section.from-deep {
+      background: linear-gradient(160deg, rgba(7, 15, 26, .78), rgba(11, 25, 44, .68));
+      -webkit-backdrop-filter: blur(22px) saturate(160%);
+      backdrop-filter: blur(22px) saturate(160%);
+      border: 1px solid rgba(255, 255, 255, .18);
+      border-radius: 26px;
+      box-shadow: var(--g-shadow), inset 0 1px 0 rgba(255, 255, 255, .25)
+    }
+
+    /* Fallback: tanpa backdrop-filter / user minta kurangi transparansi */
+    @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+      :root { --g-fill: rgba(255, 255, 255, .88); --g-fill-soft: rgba(240, 247, 255, .9) }
+      html body header.sticky, html body nav.fixed { background: rgba(255, 255, 255, .94) }
+    }
+
+    @media (prefers-reduced-transparency: reduce) {
+      :root { --g-fill: rgba(255, 255, 255, .94); --g-fill-soft: rgba(240, 247, 255, .95) }
+      html body * { -webkit-backdrop-filter: none !important; backdrop-filter: none !important }
+    }
+  </style>
 </head>
 
 <body>
