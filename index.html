@@ -225,7 +225,7 @@
     /* ===== iOS Glassmorphism layer (override, tanpa ubah markup) ===== */
     :root {
       --g-blur: 22px;
-      --g-fill: rgba(255, 255, 255, .42);
+      --g-fill: rgba(255, 255, 255, .48);
       --g-fill-soft: rgba(255, 255, 255, .30);
       --g-edge: rgba(255, 255, 255, .70);
       --g-shadow: 0 10px 32px -8px rgba(30, 64, 140, .22), 0 2px 6px rgba(30, 64, 140, .06);
@@ -246,6 +246,27 @@
     html body .max-w-md.bg-surface {
       background: transparent;
       box-shadow: none
+    }
+
+    /* Background foto: layer fixed (aman di iOS Safari) + tint biru */
+    html body::before {
+      content: "";
+      position: fixed;
+      inset: -24px;
+      z-index: -2;
+      background: url('assets/images/gallery-01.jpg') center top / cover no-repeat;
+      filter: blur(9px) saturate(115%);
+      transform: translateZ(0);
+      pointer-events: none
+    }
+
+    html body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(180deg, rgba(214, 229, 255, .38), rgba(190, 210, 250, .30) 55%, rgba(205, 195, 250, .38));
+      pointer-events: none
     }
 
     /* Kartu utama */
