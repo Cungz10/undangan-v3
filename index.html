@@ -33,9 +33,12 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config = { theme: { extend: { colors: { navy: '#0b192c', deep: '#070f1a', sapphire: '#2563eb', gold: '#d4af37', ice: '#e0f2fe', mist: '#f0f7ff', slate: '#486581', silver: '#9fb3c8', surface: '#fbf9fa' }, fontFamily: { serif: ['Playfair Display', 'serif'], sans: ['Plus Jakarta Sans', 'sans-serif'] } } } }</script>
   <style>
-    html {
-      scroll-behavior: smooth
-    }
+    html { scroll-behavior: smooth; }
+    /* Performance: keep scrolling and compositing cheap on mobile */
+    body { overscroll-behavior-x: none; }
+    .rv, .feed-item, .floating-heart { will-change: transform, opacity; }
+    @media (max-width: 640px) { .rv { transition-duration: .35s; } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
 
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
@@ -222,210 +225,54 @@
     }
   </style>
   <style id="ios-glass">
-    /* ===== iOS Glassmorphism layer (override, tanpa ubah markup) ===== */
+    /* ===== Performance glass: visual tetap glass, blur real-time diminimalkan ===== */
     :root {
-      --g-blur: 22px;
-      --g-fill: rgba(255, 255, 255, .48);
-      --g-fill-soft: rgba(255, 255, 255, .30);
-      --g-edge: rgba(255, 255, 255, .70);
-      --g-shadow: 0 10px 32px -8px rgba(30, 64, 140, .22), 0 2px 6px rgba(30, 64, 140, .06);
-      --g-hl: inset 0 1px 0 rgba(255, 255, 255, .85), inset 0 -1px 0 rgba(255, 255, 255, .25);
+      --g-fill: rgba(255,255,255,.78);
+      --g-fill-soft: rgba(255,255,255,.62);
+      --g-edge: rgba(255,255,255,.82);
+      --g-shadow: 0 8px 24px -10px rgba(30,64,140,.20);
+      --g-hl: inset 0 1px 0 rgba(255,255,255,.82);
     }
-
     html body {
-      background:
-        radial-gradient(60vmax 60vmax at 8% 4%, #bfd9ff 0%, transparent 60%),
-        radial-gradient(55vmax 55vmax at 98% 22%, #d9ccff 0%, transparent 58%),
-        radial-gradient(60vmax 60vmax at 20% 96%, #b8ecf5 0%, transparent 60%),
-        radial-gradient(45vmax 45vmax at 92% 92%, #ffd9ec 0%, transparent 60%),
-        #e6efff;
-      background-attachment: fixed;
-      -webkit-font-smoothing: antialiased
+      background: linear-gradient(135deg,#dceaff 0%,#eef5ff 45%,#f7e9f4 100%);
+      -webkit-font-smoothing: antialiased;
     }
-
-    html body .max-w-md.bg-surface {
-      background: transparent;
-      box-shadow: none
-    }
-
-    /* Background foto: layer fixed (aman di iOS Safari) + tint biru */
+    /* Static blurred background: blur is removed from the live page layer. */
     html body::before {
-      content: "";
-      position: fixed;
-      inset: -24px;
-      z-index: -2;
-      background: url('assets/images/gallery-01.jpg') center top / cover no-repeat;
-      filter: blur(9px) saturate(115%);
-      transform: translateZ(0);
-      pointer-events: none
+      content:""; position:fixed; inset:0; z-index:-2; pointer-events:none;
+      background: linear-gradient(135deg,rgba(191,217,255,.92),rgba(224,242,254,.92) 50%,rgba(255,217,236,.88));
     }
-
     html body::after {
-      content: "";
-      position: fixed;
-      inset: 0;
-      z-index: -1;
-      background: linear-gradient(180deg, rgba(214, 229, 255, .30), rgba(190, 210, 250, .20) 55%, rgba(205, 195, 250, .30));
-      pointer-events: none
+      content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+      background: linear-gradient(180deg,rgba(214,229,255,.30),rgba(205,195,250,.22));
     }
-
-    /* Kartu utama */
+    /* Opaque-ish cards: same glass feel, dramatically cheaper than backdrop-filter. */
     html body .rounded-2xl.bg-white:not(.shadow-inner),
     html body .rounded-xl.bg-white {
-      background: var(--g-fill);
-      -webkit-backdrop-filter: blur(var(--g-blur)) saturate(180%);
-      backdrop-filter: blur(var(--g-blur)) saturate(180%);
-      border: 1px solid var(--g-edge);
-      box-shadow: var(--g-shadow), var(--g-hl);
-      border-radius: 26px
+      background:var(--g-fill); border:1px solid var(--g-edge);
+      box-shadow:var(--g-shadow),var(--g-hl); border-radius:26px;
     }
-
-    html body .rounded-xl.bg-white {
-      border-radius: 18px
-    }
-
-    html body .feed-item.bg-white {
-      -webkit-backdrop-filter: blur(14px) saturate(160%);
-      backdrop-filter: blur(14px) saturate(160%);
-      border-radius: 22px
-    }
-
-    /* Chip, kolom info, input */
-    html body .bg-mist {
-      background: var(--g-fill-soft);
-      border: 1px solid rgba(255, 255, 255, .55);
-      box-shadow: var(--g-hl)
-    }
-
-    html body .bg-ice {
-      background: rgba(255, 255, 255, .55);
-      box-shadow: var(--g-hl)
-    }
-
-    html body input.bg-mist,
-    html body textarea.bg-mist {
-      background: rgba(255, 255, 255, .5);
-      border: 1px solid rgba(255, 255, 255, .8);
-      border-radius: 16px;
-      box-shadow: inset 0 1px 3px rgba(30, 64, 140, .10)
-    }
-
-    html body input.bg-mist:focus,
-    html body textarea.bg-mist:focus {
-      outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 4px rgba(37, 99, 235, .18)
-    }
-
-    html body .sel {
-      background: rgba(255, 255, 255, .75);
-      border-color: #2563eb !important;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, .14)
-    }
-
-    /* Header kaca */
-    html body header.sticky {
-      background: rgba(255, 255, 255, .38);
-      -webkit-backdrop-filter: blur(26px) saturate(190%);
-      backdrop-filter: blur(26px) saturate(190%);
-      border-bottom: 1px solid rgba(255, 255, 255, .6);
-      box-shadow: 0 1px 0 rgba(255, 255, 255, .5)
-    }
-
-    /* Bottom nav: floating pill ala tab bar iOS */
-    html body nav.fixed {
-      left: 14px;
-      right: 14px;
-      bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-      padding: 6px;
-      width: auto;
-      background: rgba(255, 255, 255, .42);
-      -webkit-backdrop-filter: blur(28px) saturate(200%);
-      backdrop-filter: blur(28px) saturate(200%);
-      border: 1px solid rgba(255, 255, 255, .75);
-      border-radius: 30px;
-      box-shadow: 0 16px 40px -10px rgba(30, 64, 140, .35), var(--g-hl)
-    }
-
-    html body nav .tab {
-      border-radius: 22px;
-      padding: 6px 0;
-      transition: background .25s, color .25s, transform .2s
-    }
-
-    html body nav .tab:active {
-      transform: scale(.94)
-    }
-
-    html body nav .tab.on {
-      background: rgba(255, 255, 255, .85);
-      box-shadow: 0 4px 12px -2px rgba(30, 64, 140, .2), var(--g-hl)
-    }
-
-    /* Tombol gelap jadi kaca gelap */
-    html body button.bg-navy,
-    html body a.bg-navy {
-      background: rgba(11, 25, 44, .78);
-      -webkit-backdrop-filter: blur(12px);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, .18);
-      box-shadow: 0 8px 20px -6px rgba(11, 25, 44, .5), inset 0 1px 0 rgba(255, 255, 255, .22)
-    }
-
-    html body #toast {
-      background: rgba(11, 25, 44, .7);
-      -webkit-backdrop-filter: blur(20px) saturate(160%);
-      backdrop-filter: blur(20px) saturate(160%);
-      border: 1px solid rgba(255, 255, 255, .2)
-    }
-
-    /* Lightbox & welcome */
-    html body #lb {
-      background: rgba(7, 15, 26, .55);
-      -webkit-backdrop-filter: blur(30px) saturate(150%);
-      backdrop-filter: blur(30px) saturate(150%)
-    }
-
-    html body #lb .bg-white\/10 {
-      background: rgba(255, 255, 255, .16);
-      border: 1px solid rgba(255, 255, 255, .28);
-      -webkit-backdrop-filter: blur(14px);
-      backdrop-filter: blur(14px)
-    }
-
-    html body #welcome .backdrop-blur-md {
-      background: rgba(255, 255, 255, .14);
-      -webkit-backdrop-filter: blur(26px) saturate(180%);
-      backdrop-filter: blur(26px) saturate(180%);
-      border: 1px solid rgba(255, 255, 255, .38);
-      border-radius: 28px;
-      box-shadow: 0 20px 50px -12px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 255, 255, .5)
-    }
-
-    html body #btn-open-invite {
-      border: 1px solid rgba(255, 255, 255, .35);
-      box-shadow: 0 14px 30px -8px rgba(37, 99, 235, .6), inset 0 1px 0 rgba(255, 255, 255, .5)
-    }
-
-    /* Kartu tiket gelap tetap kaca */
-    html body section.from-deep {
-      background: linear-gradient(160deg, rgba(7, 15, 26, .78), rgba(11, 25, 44, .68));
-      -webkit-backdrop-filter: blur(22px) saturate(160%);
-      backdrop-filter: blur(22px) saturate(160%);
-      border: 1px solid rgba(255, 255, 255, .18);
-      border-radius: 26px;
-      box-shadow: var(--g-shadow), inset 0 1px 0 rgba(255, 255, 255, .25)
-    }
-
-    /* Fallback: tanpa backdrop-filter / user minta kurangi transparansi */
-    @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-      :root { --g-fill: rgba(255, 255, 255, .88); --g-fill-soft: rgba(240, 247, 255, .9) }
-      html body header.sticky, html body nav.fixed { background: rgba(255, 255, 255, .94) }
-    }
-
-    @media (prefers-reduced-transparency: reduce) {
-      :root { --g-fill: rgba(255, 255, 255, .94); --g-fill-soft: rgba(240, 247, 255, .95) }
-      html body * { -webkit-backdrop-filter: none !important; backdrop-filter: none !important }
+    html body .rounded-xl.bg-white { border-radius:18px; }
+    html body .feed-item.bg-white { border-radius:22px; }
+    html body .bg-mist { background:var(--g-fill-soft); border:1px solid rgba(255,255,255,.65); box-shadow:var(--g-hl); }
+    html body .bg-ice { background:rgba(255,255,255,.68); box-shadow:var(--g-hl); }
+    html body input.bg-mist, html body textarea.bg-mist { background:rgba(255,255,255,.68); border:1px solid rgba(255,255,255,.82); border-radius:16px; box-shadow:inset 0 1px 3px rgba(30,64,140,.08); }
+    html body input.bg-mist:focus, html body textarea.bg-mist:focus { outline:none; border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,.14); }
+    html body .sel { background:rgba(255,255,255,.86); border-color:#2563eb !important; box-shadow:0 0 0 2px rgba(37,99,235,.12); }
+    html body header.sticky { background:rgba(255,255,255,.82); border-bottom:1px solid rgba(255,255,255,.72); box-shadow:0 1px 0 rgba(255,255,255,.6); }
+    html body nav.fixed { left:14px; right:14px; bottom:calc(12px + env(safe-area-inset-bottom,0px)); padding:6px; width:auto; background:rgba(255,255,255,.84); border:1px solid rgba(255,255,255,.88); border-radius:30px; box-shadow:0 10px 28px -10px rgba(30,64,140,.28),var(--g-hl); }
+    html body nav .tab { border-radius:22px; padding:6px 0; transition:background .2s,color .2s,transform .15s; }
+    html body nav .tab:active { transform:scale(.96); }
+    html body nav .tab.on { background:rgba(255,255,255,.96); box-shadow:0 3px 10px -3px rgba(30,64,140,.16),var(--g-hl); }
+    html body button.bg-navy, html body a.bg-navy { background:rgba(11,25,44,.90); border:1px solid rgba(255,255,255,.16); box-shadow:0 6px 16px -6px rgba(11,25,44,.40),inset 0 1px 0 rgba(255,255,255,.18); }
+    html body #toast { background:rgba(11,25,44,.90); border:1px solid rgba(255,255,255,.18); }
+    html body #lb { background:rgba(7,15,26,.88); }
+    html body #lb .bg-white\/10 { background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.28); }
+    html body #welcome .backdrop-blur-md { background:rgba(20,32,52,.72); border:1px solid rgba(255,255,255,.28); border-radius:28px; box-shadow:0 16px 36px -12px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.35); }
+    html body #btn-open-invite { border:1px solid rgba(255,255,255,.35); box-shadow:0 10px 24px -8px rgba(37,99,235,.48),inset 0 1px 0 rgba(255,255,255,.45); }
+    html body section.from-deep { background:linear-gradient(160deg,rgba(7,15,26,.92),rgba(11,25,44,.88)); border:1px solid rgba(255,255,255,.16); border-radius:26px; box-shadow:var(--g-shadow),inset 0 1px 0 rgba(255,255,255,.18); }
+    @media (prefers-reduced-transparency: reduce), (max-width:640px) {
+      html body * { -webkit-backdrop-filter:none !important; backdrop-filter:none !important; }
     }
   </style>
 </head>
@@ -952,7 +799,7 @@ ${C.gifts.map(g => `<div class="p-3.5 rounded-xl bg-mist border border-ice flex 
 
         h.className = 'floating-heart';
         h.textContent = sym;
-        h.style.cssText = `left:${left}%;font-size:${size}px;color:${col};filter:drop-shadow(0 2px 8px rgba(0,0,0,0.18));animation-duration:${dur}s;--sway:${sway}px;--rot:${rot}deg;`;
+        h.style.cssText = `left:${left}%;font-size:${size}px;color:${col};text-shadow:0 2px 8px rgba(0,0,0,.18);animation-duration:${dur}s;--sway:${sway}px;--rot:${rot}deg;`;
         h.addEventListener('animationend', () => h.remove(), { once: true });
         layer.appendChild(h);
       }
